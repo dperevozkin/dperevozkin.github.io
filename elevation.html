@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=0.9">
+
+<head>
+    <title>
+        Current elevation
+    </title>
+</head>
+
+<body>
+
+<div id="output">
+    &nbsp;
+</div>
+
+<script>
+    // ----------------------------------------------
+    "use strict";
+    // ----------------------------------------------
+    const data = {};
+    // ----------------------------------------------
+    class Display
+        {
+        // ------------------------------------------
+        update(position)
+            {
+            if (position instanceof GeolocationPosition)
+                this.text = "Your elevation:<br />" + position.coords.altitude + "±" + Math.round(position.coords.altitudeAccuracy, 0) + "m";
+            else
+                this.text = position.message;
+            }
+        // ------------------------------------------
+        constructor(area)
+            {
+            this.area = document.getElementById(area);
+            this.text = "Updating...";
+            }
+        // ------------------------------------------
+        set text(value)
+            {
+            this.area.innerHTML = value;
+            }
+        // ------------------------------------------
+        get text()
+            {
+            return this.area.innerHTML;
+            }
+        // ------------------------------------------
+        }
+    // ----------------------------------------------
+
+    // ----------------------------------------------
+    class handlers
+        {
+        // ------------------------------------------
+        static update(position)
+            {
+            data.display.update(position);
+            }
+        // ------------------------------------------
+        static main()
+            {
+            const options =
+                {
+                enableHighAccuracy: false,
+                timeout: 5000,
+                maximumAge: 10000
+                };
+            
+            data.watch = null;
+            data.display = new Display("output");
+
+            if (navigator.geolocation)
+                data.watch = navigator.geolocation.watchPosition(handlers.update, handlers.update, options);
+            else
+                data.display.text = "Geolocation is not supported by this browser.";
+            }
+        // ------------------------------------------
+        }
+    // ----------------------------------------------
+
+    // ----------------------------------------------
+    handlers.main();
+    // ----------------------------------------------
+</script>
+
+</body>
+</html>
+
